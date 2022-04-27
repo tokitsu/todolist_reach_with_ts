@@ -3,33 +3,31 @@ import { setTextRange } from 'typescript';
 import './App.css';
 
 function App() {
-  const [text, setText] = useState("")
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [inputText, setInputText] = useState("");
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   type Todo = {
     id: number,
     text: string,
-    checked: boolean,
+    checked: boolean
   }
 
-
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     // console.log(e.target.value)
-    setText(e.target.value)
+    setInputText(e.target.value)
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newTodo: Todo = {
+    const todo = {
       id: todos.length,
-      text: text,
-      checked: false
+      text: inputText,
+      checked: false,
     }
-    setTodos([newTodo, ...todos])
+    setTodos([todo, ...todos]);
   }
 
-  const handleEdit = (id: number, value: string) => {
+  const handleEdit = (value: string, id: number) => {
     const newTodos = todos.map((todo) => {
       if (todo.id === id) {
         todo.text = value
@@ -39,10 +37,10 @@ function App() {
     setTodos(newTodos)
   }
 
-  const handleChecked = (value: boolean, id: number) => {
+  const handleChecked = (id: number, checked: boolean) => {
     const newTodos = todos.map((todo) => {
       if (todo.id === id) {
-        todo.checked = !value
+        todo.checked = !checked
       }
       return todo
     })
@@ -58,18 +56,17 @@ function App() {
     <div className="App">
       <div>
         <h2>todo_with_ts</h2>
-        <form action="" onSubmit={(e) => handleSubmit(e)}>
-          <input type="text" onChange={(e) => handleChange(e)} className="inputText" />
-          <input type="submit" value="作成" />
+        <form onSubmit={(e) => handleSubmit(e)}>
+          <input type="text" onChange={(e) => handleInput(e)} />
+          <input type="submit" value="登録" />
         </form>
         {todos.map((todo) => (
-          <li key={todo.id}>
-            <input type="text" value={todo.text} onChange={(e) => handleEdit(todo.id, e.target.value)} className="inputText" />
-            <input type="checkbox" checked={todo.checked} onChange={() => handleChecked(todo.checked, todo.id)} />
+          <li>
+            <input type="text" value={todo.text} onChange={(e) => handleEdit(e.target.value, todo.id)} disabled={todo.checked} />
+            <input type="checkbox" onChange={() => handleChecked(todo.id, todo.checked)} />
             <button onClick={() => handleDelete(todo.id)}>削除</button>
           </li>
-        ))
-        }
+        ))}
       </div>
     </div>
   );
